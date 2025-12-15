@@ -89,6 +89,25 @@ body {
 }
 
 @keyframes fadeAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    2% {
+        opacity: 1;
+    }
+
+    /* Fade in fast */
+    10% {
+        opacity: 1;
+    }
+
+    /* Stay visible */
+    12% {
+        opacity: 0;
+    }
+
+    /* Fade out */
     100% {
         opacity: 0;
     }
