@@ -142,8 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Wait a bit then move to step 3 automatically or show a button?
         // Let's show a "Next" button replacing the old one
         const btn = card.querySelector('button');
-        btn.innerText = "Tiếp hông?";
-        btn.onclick = () => nextWish(3);
+        if (btn) {
+            btn.innerText = "Tiếp hông?";
+            // Use setAttribute to ensure it overrides the HTML inline handler reliably
+            btn.setAttribute('onclick', 'window.nextWish(3)');
+
+            // Remove previous event listeners if any (optional but good practice not needed here for inline)
+        }
 
         // Add a jumping animation
         card.style.animation = "bounce 0.5s";
