@@ -42,16 +42,59 @@
             <button id="runaway-btn">Giận quá tắt luôn!</button>
         </div>
 
-        <!-- Scene 3: The Real Wish (Sincere) -->
+        <!-- Fake Loading Scene (New Prank) -->
+        <div id="loading-scene" class="scene hidden"
+            style="background: rgba(0,0,0,0.9); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 1000; color: white;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                <div class="spinner"></div>
+                <h2 id="loading-text" style="margin-top: 20px;">Đang tải...</h2>
+            </div>
+        </div>
+
+        <!-- Scene 3: The True Wishes (Interactive Story) -->
         <div id="wish-scene" class="scene hidden">
-            <h1 class="wish-title">Đùa chút thôi... ❤️</h1>
-            <div class="wish-card">
-                <p class="message">
-                    Chúc chị iu đi làm ở chỗ mới thật nhiều may mắn, <br>
-                    thành công và luôn vui vẻ nhé! <br>
-                    <span class="highlight">Everything will be okay!</span>
-                </p>
-                <div class="hearts">❤️❤️❤️</div>
+            <!-- Step 1 -->
+            <div id="wish-step-1" class="wish-step">
+                <h1 class="wish-title">Điều bất ngờ thứ 1... 🌟</h1>
+                <div class="wish-card">
+                    <p class="message">Chúc chị iu những ngày tháng sắp tới sẽ có thật nhiều niềm vui nè! <br> 🥰🥰🥰
+                    </p>
+                    <button class="next-btn" onclick="nextWish(2)">Xem tiếp hông?</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="wish-step-2" class="wish-step hidden">
+                <div class="wish-card sad-theme" id="card-2">
+                    <h1 class="wish-title" id="title-2">Hong bùn nữa nho! 🥺</h1>
+                    <p class="message" id="msg-2">Quẳng gánh lo đi mà vui sống...</p>
+                    <button class="next-btn" onclick="transformSadToHappy()">Hứa đi!</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div id="wish-step-3" class="wish-step hidden">
+                <div class="wish-card">
+                    <div class="avatar-circle">👦</div> <!-- Placeholder for 'Em Bảo' -->
+                    <p class="message">
+                        "Nghĩ những điều tốt đẹp lên nho. <br>
+                        <span class="highlight">Em Bảo</span> sẽ luôn bên cạnh ủng hộ chị <br>
+                        như cách chị ủng hộ em Bảo nè! 💪"
+                    </p>
+                    <button class="next-btn" onclick="nextWish(4)">Còn nữa nè...</button>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div id="wish-step-4" class="wish-step hidden">
+                <h1 class="wish-title">Điều cuối cùng... ✨</h1>
+                <div class="wish-card final-card">
+                    <p class="message">
+                        Mỗi ngày luôn là một niềm vui với <span class="highlight">Thuy Anh</span> á <br>
+                        Nên là cứ tiếp tục vững bước trên con đường mình chọn nho! 💃💃💃
+                    </p>
+                    <div class="hearts">❤️❤️❤️❤️❤️</div>
+                </div>
             </div>
         </div>
     </div>
