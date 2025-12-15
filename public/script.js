@@ -167,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('custom-modal');
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        modal.style.zIndex = '9999';
 
         // Change button text
         const btn = document.getElementById('final-btn');
