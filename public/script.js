@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PRANK LOGIC ---
     giftBox.addEventListener('click', () => {
+        // Play Music immediately on user interaction
+        const audio = document.getElementById('bg-music');
+        audio.volume = 0.6; // Not too loud
+        audio.play().catch(e => console.log("Audio play failed trying to autoplay later", e));
+
+        // 1. Shake Effect before opening
         giftBox.style.animation = 'shake 0.5s';
         setTimeout(() => {
             giftScene.classList.add('hidden');
