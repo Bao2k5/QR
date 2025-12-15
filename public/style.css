@@ -1,13 +1,5 @@
 /* ... Previous styles ... */
 
-/* Previous content of style.css is assumed to be preserved or appended to. 
-   Since I cannot append effectively without reading, I will ensure I cover the new classes. 
-   Ideally I should have read the file first, but I'll use the 'write_to_file' with a full overwrite for safety 
-   OR just append using a new file approach if system supports it. 
-   WAIT, I need to use 'replace_file_content' or just overwrite carefully. 
-   I will overwrite style.css with the FULL content to be safe and ensure consistency.
-*/
-
 :root {
     --primary-color: #ff6b6b;
     --secondary-color: #feca57;
@@ -32,8 +24,6 @@ body {
     /* Allow vertical scroll */
     color: var(--text-color);
 }
-
-/* ... existing code ... */
 
 .modal-content {
     background-color: #fff;
@@ -177,7 +167,6 @@ body::before {
 @media (max-width: 600px) {
     .title {
         font-size: 1.8rem;
-        /* Smaller font */
     }
 
     .prank-text {
@@ -194,11 +183,23 @@ body::before {
     }
 
     .wish-card {
-        padding: 15px;
+        padding: 20px;
+        max-width: 95%;
+        /* Wider on mobile */
     }
 
-    button {
-        font-size: 1rem !important;
+    /* VITAL: Make buttons easy to tap */
+    button,
+    .next-btn,
+    #runaway-btn {
+        font-size: 1.1rem !important;
+        padding: 15px 30px !important;
+        /* Fat fingers friendly */
+        min-height: 50px;
+        /* Accessibility standard */
+        touch-action: manipulation;
+        /* Faster click response */
+        margin-top: 15px !important;
     }
 }
 
@@ -348,11 +349,11 @@ body::before {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     margin: 0 auto;
     max-width: 90%;
-    transform: translateY(20px);
-    opacity: 0;
-    animation: slideUp 0.8s forwards;
+    transform: translateY(0);
+    /* FIX: Reset transform default */
+    /* opacity: 0; REMOVED FIX: Ensure visibility */
+    animation: slideUp 0.8s ease-out;
     transition: all 0.5s ease;
-    /* Smooth transition for theme change */
 }
 
 .sad-theme {
@@ -508,6 +509,11 @@ body::before {
 }
 
 @keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
     to {
         transform: translateY(0);
         opacity: 1;

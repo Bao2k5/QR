@@ -143,19 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trigger confetti small
         confetti({ origin: { y: 0.7 }, particleCount: 50 });
 
-        // REPLACE THE BUTTON LITERALLY to clear all old events
-        const oldBtn = card.querySelector('button');
-        if (oldBtn) {
-            const newBtn = document.createElement('button');
-            newBtn.className = 'next-btn';
-            newBtn.innerText = "Tiếp hông? (Bấm nè)";
-            newBtn.onclick = function () { window.nextWish(3); };
-            oldBtn.replaceWith(newBtn);
+        // FIX: Auto-advance logic
+        const btn = card.querySelector('button');
+        if (btn) {
+            btn.innerText = "Xong rồi! 🥰";
+            btn.disabled = true;
+            btn.style.backgroundColor = "#2ed573";
         }
 
-        // Add a jumping animation
-        card.style.animation = "none"; // reset
+        // Reset animation
+        card.style.animation = "none";
         setTimeout(() => { card.style.animation = "bounce 0.5s"; }, 10);
+
+        // AUTO ADVANCE TO STEP 3 AFTER 2 SECONDS
+        setTimeout(() => {
+            window.nextWish(3);
+        }, 2000);
     };
 
     function transitionToStory() {
