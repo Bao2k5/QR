@@ -7,13 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let dodgeCount = 0;
 
     // --- PRANK LOGIC ---
-    giftBox.addEventListener('click', () => {
-        // Play Music immediately on user interaction
+    // FIX: Click ANYWHERE in the scene to open (easier for mobile)
+    giftScene.addEventListener('click', () => {
+        // Play Music immediately
         const audio = document.getElementById('bg-music');
-        audio.volume = 0.6; // Not too loud
+        audio.volume = 0.6;
         audio.play().catch(e => console.log("Audio play failed trying to autoplay later", e));
 
-        // 1. Shake Effect before opening
+        // 1. Shake Effect before opening (Animate the box)
         giftBox.style.animation = 'shake 0.5s';
         setTimeout(() => {
             giftScene.classList.add('hidden');
@@ -24,39 +25,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const taunts = [
-        "Lêu lêu 😝",
-        "Hụt rồi!",
-        "Bắt em đi!",
-        "Chậm quá à!",
-        "Cố lên chị iu!",
-        "Non nớt quá! 🤣",
-        "Kém dọ! 😎",
-        "Còn lâu mới bắt được!",
-        "Tay đâu mà chậm thế?",
-        "Ahihi đồ ngốc! 🤪"
+        "Lêu lêu 😝", "Hụt rồi!", "Bắt em đi!", "Chậm quá à!",
+        "Cố lên chị iu!", "Non nớt quá! 🤣", "Kém dọ! 😎",
+        "Còn lâu mới bắt được!", "Tay đâu mà chậm thế?", "Ahihi đồ ngốc! 🤪"
     ];
 
-    // Runaway Button
-    // FIX: Use 'mouseover' instead of 'mousemove' to be less aggressive on desktop
+    // Runaway Button Logic
+    // FIX 1: Use mouseover for desktop
     runawayBtn.addEventListener('mouseover', moveButton);
 
+    // FIX 2: Handle touchstart carefully
     runawayBtn.addEventListener('touchstart', (e) => {
-        // Only prevent default (blocking click) if we are still in "prank mode"
-        if (dodgeCount < 5) {
-            e.preventDefault();
+        // Only prevent click if we are still playing (count < 15)
+        if (dodgeCount < 15) {
+            e.preventDefault(); // Stop click, just move
             moveButton();
         }
-        // If dodgeCount >= 5, let the default "click" happen so the user can win!
+        // If >= 15, do NOTHING -> Let the click happen naturally
     });
 
+    // FIX 3: Click handler
     runawayBtn.addEventListener('click', () => {
-        if (dodgeCount < 5) { // Reduced to 5 for less frustration
+        if (dodgeCount < 15) {
+            // If they somehow clicked, count it as a dodge
             moveButton();
         } else {
-            // STOPPED moving - WIN STATE
+            // WIN STATE
             runawayBtn.innerText = "Giỏi ghê tarr! ❤️";
-
-            // Remove listeners to stop jumping
+            // Important: Stop it from moving anymore
             runawayBtn.removeEventListener('mouseover', moveButton);
 
             setTimeout(() => {
@@ -66,8 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function moveButton() {
-        // Limit max jumps
-        if (dodgeCount >= 5) return;
+        if (dodgeCount >= 15) return; // Stop if reached limit
 
         // Change text randomly
         runawayBtn.innerText = taunts[dodgeCount % taunts.length];
@@ -75,9 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
         dodgeCount++;
         const x = Math.random() * (window.innerWidth - 150);
         const y = Math.random() * (window.innerHeight - 50);
+
+        // Ensure button stays on screen
+        const safeX = Math.max(10, Math.min(x, window.innerWidth - 160));
+        const safeY = Math.max(10, Math.min(y, window.innerHeight - 60));
+
         runawayBtn.style.position = 'fixed';
-        runawayBtn.style.left = `${x}px`;
-        runawayBtn.style.top = `${y}px`;
+        runawayBtn.style.left = `${safeX}px`;
+        runawayBtn.style.top = `${safeY}px`;
     }
 
     function startFakeLoading() {
@@ -106,53 +106,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadingScene.classList.add('hidden');
                     loadingScene.style.display = 'none';
                     transitionToStory();
-                }, 2000); // Wait 2s for suspense
+                }, 2000);
             }
-        }, 2500); // Slow update (2.5s) for mystery
+        }, 2500);
     }
 
     // --- STORY LOGIC ---
-    // Make functions global so HTML onclick can find them
     window.nextWish = function (stepId) {
-        // Hide all steps
         document.querySelectorAll('.wish-step').forEach(el => {
             el.classList.add('hidden');
             el.style.display = 'none';
         });
 
-        // Show target step
         const nextStep = document.getElementById(`wish-step-${stepId}`);
         if (nextStep) {
             nextStep.classList.remove('hidden');
             nextStep.style.display = 'block';
 
-            // Special effect for final step
             if (stepId === 4) {
                 triggerConfetti();
-                setInterval(triggerConfetti, 2000); // Loop confetti for finale
+                setInterval(triggerConfetti, 2000);
             }
         }
     };
 
+    // Step 2 Logic (Auto Advance)
     window.transformSadToHappy = function () {
-        // Step 2 specific interaction
         const title = document.getElementById('title-2');
         const msg = document.getElementById('msg-2');
         const card = document.getElementById('card-2');
 
-        // Change content visually
         title.innerText = "Yeee! Vui lên nha! 🥰";
         title.style.color = "#d63031";
         msg.innerHTML = "Nụ cười là liều thuốc bổ mà!<br>Cười lên cái xem nào! 📸";
 
-        // Switch Theme Class
         card.classList.remove('sad-theme');
         card.classList.add('happy-theme');
 
-        // Trigger confetti small
         confetti({ origin: { y: 0.7 }, particleCount: 50 });
 
-        // FIX: Auto-advance logic
         const btn = card.querySelector('button');
         if (btn) {
             btn.innerText = "Xong rồi! 🥰";
@@ -160,11 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.style.backgroundColor = "#2ed573";
         }
 
-        // Reset animation
         card.style.animation = "none";
         setTimeout(() => { card.style.animation = "bounce 0.5s"; }, 10);
 
-        // AUTO ADVANCE TO STEP 3 AFTER 2 SECONDS
+        // AUTO ADVANCE
         setTimeout(() => {
             window.nextWish(3);
         }, 2000);
@@ -178,13 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
             prankScene.style.display = 'none';
             wishScene.classList.remove('hidden');
             wishScene.style.display = 'block';
-
-            // Show Step 1 explicitly
             document.getElementById('wish-step-1').style.display = 'block';
         }, 500);
     }
 
-    // --- UTILS ---
     function triggerConfetti() {
         var duration = 2000;
         var end = Date.now() + duration;
@@ -196,21 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.finishStory = function () {
-        console.log("Finish Story Triggered");
         try {
-            // Check confetti
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-            } else {
-                console.warn("Confetti not loaded");
-            }
+            if (typeof confetti === 'function') confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
 
-            // Show the Custom Modal
             const modal = document.getElementById('custom-modal');
-            if (!modal) {
-                alert("Lỗi: Không tìm thấy modal!");
-                return;
-            }
+            if (!modal) { alert("Lỗi: Không tìm thấy modal!"); return; }
 
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
@@ -218,15 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.visibility = 'visible';
             modal.style.zIndex = '9999';
 
-            // Change button text
             const btn = document.getElementById('final-btn');
             if (btn) {
                 btn.innerText = "Đã chốt đơn à nha! 🔒";
                 btn.disabled = true;
                 btn.style.backgroundColor = "#636e72";
             }
-
-            // Show validation text
             const troll = document.getElementById('final-troll');
             if (troll) {
                 troll.innerText = "Giao dịch thành công. Cảm ơn quý khách! 💸";
@@ -236,22 +211,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (e) {
             alert("Lỗi hiển thị: " + e.message);
-            console.error(e);
         }
     };
-
-    // Explicit binding to ensure it works
-    const finalBtn = document.getElementById('final-btn');
-    if (finalBtn) {
-        finalBtn.addEventListener('click', window.finishStory);
-    }
 
     window.closeModal = function () {
         const modal = document.getElementById('custom-modal');
         modal.classList.add('hidden');
         modal.style.display = 'none';
-
-        // Final rain of confetti
         triggerConfetti();
     };
+
+    // Ensure event binding for final button if inline onclick fails
+    const finalBtn = document.getElementById('final-btn');
+    if (finalBtn) {
+        finalBtn.onclick = window.finishStory;
+    }
 });
