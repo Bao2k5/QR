@@ -37,19 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // Runaway Button
-    runawayBtn.addEventListener('mousemove', moveButton);
+    // FIX: Use 'mouseover' instead of 'mousemove' to be less aggressive on desktop
+    runawayBtn.addEventListener('mouseover', moveButton);
+
     runawayBtn.addEventListener('touchstart', (e) => {
-        // Prevent default tap zoom/behavior
-        e.preventDefault();
-        moveButton();
+        // Only prevent default (blocking click) if we are still in "prank mode"
+        if (dodgeCount < 5) {
+            e.preventDefault();
+            moveButton();
+        }
+        // If dodgeCount >= 5, let the default "click" happen so the user can win!
     });
 
     runawayBtn.addEventListener('click', () => {
-        if (dodgeCount < 15) { // Increased to 15 for "nhây" mode
+        if (dodgeCount < 5) { // Reduced to 5 for less frustration
             moveButton();
         } else {
-            // STOPPED moving
+            // STOPPED moving - WIN STATE
             runawayBtn.innerText = "Giỏi ghê tarr! ❤️";
+
+            // Remove listeners to stop jumping
+            runawayBtn.removeEventListener('mouseover', moveButton);
+
             setTimeout(() => {
                 startFakeLoading();
             }, 500);
@@ -57,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function moveButton() {
-        // Reduced gap to 14 to ensure it definitely finishes but takes longer
-        if (dodgeCount >= 15) return;
+        // Limit max jumps
+        if (dodgeCount >= 5) return;
 
         // Change text randomly
         runawayBtn.innerText = taunts[dodgeCount % taunts.length];
