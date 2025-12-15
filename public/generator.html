@@ -201,68 +201,78 @@
             finalCanvas.height = bgImg.naturalHeight;
 
             // Draw full background
+            // Lighten it slightly for better contrast without a white box
+            ctx.filter = "brightness(1.1)";
             ctx.drawImage(bgImg, 0, 0);
+            ctx.filter = "none";
 
             // 2. Generate QR
-            // Type 4 = Good balance of density for standard URLs
-            const qr = qrcode(4, 'M');
+            // Type 6 = More density, looks cooler ("Art")
+            const qr = qrcode(6, 'M');
             qr.addData(text);
             qr.make();
 
             const moduleCount = qr.getModuleCount();
 
-            // 3. Draw QR in a "Card" style (TikTok Trend)
-            // Center the QR container
-            const size = Math.min(finalCanvas.width, finalCanvas.height) * 0.5; // 50% of image size
-            const padding = size * 0.1; // White padding
-            const totalSize = size + (padding * 2);
+            // 3. Draw QR Overlay (NO WHITE BOX)
+            // Center the QR
+            const size = Math.min(finalCanvas.width, finalCanvas.height) * 0.6; // 60% size
 
-            const startX = (finalCanvas.width - totalSize) / 2;
-            const startY = (finalCanvas.height - totalSize) / 2;
-
-            // Draw White Card Background (Shadow + Rounded)
-            ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.shadowBlur = 50;
-            ctx.fillStyle = "white";
-
-            // Simple Rounded Rect setup
-            const r = 40; // radius
-            ctx.beginPath();
-            ctx.roundRect(startX, startY, totalSize, totalSize, r);
-            ctx.fill();
-            ctx.shadowColor = "transparent"; // Reset shadow
-
-            // Draw QR Modules
+            const startX = (finalCanvas.width - size) / 2;
+            const startY = (finalCanvas.height - size) / 2;
             const cellSize = size / moduleCount;
-            const qrStartX = startX + padding;
-            const qrStartY = startY + padding;
 
             ctx.fillStyle = (mode === 'color') ? "#ff4757" : "black";
+            // Shadow for depth
+            ctx.shadowColor = "rgba(0,0,0,0.3)";
+            ctx.shadowBlur = 5;
 
             for (let row = 0; row < moduleCount; row++) {
                 for (let col = 0; col < moduleCount; col++) {
                     if (qr.isDark(row, col)) {
-                        // Draw each module as a slightly rounded square/circle
-                        const x = qrStartX + (col * cellSize);
-                        const y = qrStartY + (row * cellSize);
-                        const w = cellSize;
-                        const h = cellSize;
+                        const x = startX + (col * cellSize);
+                        const y = startY + (row * cellSize);
+                        const cx = x + cellSize / 2;
+                        const cy = y + cellSize / 2;
+                        const r = cellSize * 0.4; // Dot radius (leave gap)
 
-                        // Make it look nice (Liquid style)
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, w, h, w * 0.3);
-                        ctx.fill();
+                        const isPositioner = (row < 8 && col < 8) || (row < 8 && col >= moduleCount - 8) || (row >= moduleCount - 8 && col < 8);
+
+                        if (isPositioner) {
+                            // Positioners: Solid Square with White Border
+                            ctx.fillStyle = "white";
+                            ctx.fillRect(x - 2, y - 2, cellSize + 4, cellSize + 4); // Border
+                            ctx.fillStyle = "black";
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        } else {
+                            // Data Dots: Circle with White Halo
+                            // Halo (White Stroke)
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, r + (cellSize * 0.15), 0, 2 * Math.PI);
+                            ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // White Halo
+                            ctx.fill();
+
+                            // The Dot
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                            ctx.fillStyle = (mode === 'color') ? "#d63031" : "#2d3436";
+                            ctx.fill();
+                        }
                     }
                 }
             }
 
-            // Add "Scan Me" text
-            ctx.fillStyle = "#2d3436";
-            const fontSize = totalSize * 0.08;
+            ctx.shadowColor = "transparent";
+
+            // Add "Scan Me" text text-shadow for readability
+            ctx.fillStyle = "white";
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 10;
+            const fontSize = size * 0.08;
             ctx.font = `bold ${fontSize}px Poppins`;
             ctx.textAlign = "center";
-            ctx.fillText("Quét tui đi! 📸", finalCanvas.width / 2, startY + totalSize + fontSize + 20);
-        }
+            ctx.fillText("Quét tui đi! 📸", finalCanvas.width / 2, startY + size + fontSize + 20);
+        }    }
     </script>
 
 </body>
