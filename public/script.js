@@ -131,27 +131,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const msg = document.getElementById('msg-2');
         const card = document.getElementById('card-2');
 
-        // Change content
+        // Change content visually
         title.innerText = "Yeee! Vui lên nha! 🥰";
-        msg.innerText = "Nụ cười là liều thuốc bổ mà!";
-        card.style.backgroundColor = "#fff0f0"; // warmer color
+        title.style.color = "#d63031";
+        msg.innerHTML = "Nụ cười là liều thuốc bổ mà!<br>Cười lên cái xem nào! 📸";
+
+        // Switch Theme Class
+        card.classList.remove('sad-theme');
+        card.classList.add('happy-theme');
 
         // Trigger confetti small
         confetti({ origin: { y: 0.7 }, particleCount: 50 });
 
-        // Wait a bit then move to step 3 automatically or show a button?
-        // Let's show a "Next" button replacing the old one
-        const btn = card.querySelector('button');
-        if (btn) {
-            btn.innerText = "Tiếp hông?";
-            // Use setAttribute to ensure it overrides the HTML inline handler reliably
-            btn.setAttribute('onclick', 'window.nextWish(3)');
-
-            // Remove previous event listeners if any (optional but good practice not needed here for inline)
+        // REPLACE THE BUTTON LITERALLY to clear all old events
+        const oldBtn = card.querySelector('button');
+        if (oldBtn) {
+            const newBtn = document.createElement('button');
+            newBtn.className = 'next-btn';
+            newBtn.innerText = "Tiếp hông? (Bấm nè)";
+            newBtn.onclick = function () { window.nextWish(3); };
+            oldBtn.replaceWith(newBtn);
         }
 
         // Add a jumping animation
-        card.style.animation = "bounce 0.5s";
+        card.style.animation = "none"; // reset
+        setTimeout(() => { card.style.animation = "bounce 0.5s"; }, 10);
     };
 
     function transitionToStory() {

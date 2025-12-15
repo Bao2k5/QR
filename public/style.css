@@ -351,6 +351,22 @@ body::before {
     transform: translateY(20px);
     opacity: 0;
     animation: slideUp 0.8s forwards;
+    transition: all 0.5s ease;
+    /* Smooth transition for theme change */
+}
+
+.sad-theme {
+    background: #dfe6e9;
+    /* Grayish blue for sad */
+    border: 2px solid #b2bec3;
+}
+
+.happy-theme {
+    background: #fff0f0 !important;
+    /* Warm pink for happy */
+    border: 2px solid #ff7675 !important;
+    transform: scale(1.02);
+    /* Slight pop */
 }
 
 .final-card {
