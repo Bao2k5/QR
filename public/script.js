@@ -44,16 +44,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // If >= 15, do NOTHING -> Let the click happen naturally
     });
 
-    // FIX 3: Click handler
-    runawayBtn.addEventListener('click', () => {
+    // FIX 3: Click handler - ABSOLUTE FINAL FIX
+    runawayBtn.addEventListener('click', (e) => {
         if (dodgeCount < 15) {
-            // If they somehow clicked, count it as a dodge
+            // Still playing
             moveButton();
         } else {
             // WIN STATE
             runawayBtn.innerText = "Giỏi ghê tarr! ❤️";
-            // Important: Stop it from moving anymore
-            runawayBtn.removeEventListener('mouseover', moveButton);
+
+            // EMERGENCY: Remove all 'touchstart' blockers by cloning the button
+            // This strips all event listeners, ensuring the next click is CLEAN
+            const newBtn = runawayBtn.cloneNode(true);
+            runawayBtn.parentNode.replaceChild(newBtn, runawayBtn);
+
+            // New button just triggers the loading scene
+            newBtn.style.position = 'static'; // Reset position logic if needed or keep fixed
+            newBtn.style.transform = 'scale(1.2)';
+            newBtn.innerText = "Giỏi ghê tarr! ❤️";
+
+            // Auto transition or wait for click?
+            // Let's auto-transition to avoid "double click" confusion
+            setTimeout(() => {
+                // Manually trigger the next sequence
+                // We need to access startFakeLoading which is inside this scope
+                // So we can't just clone purely if we lose scope access
+                // Actually, cloning is risky with scope.
+
+                // Better approach: Just set a flag or rely on the timeout
+                // Visual feedback is enough
+            }, 100);
 
             setTimeout(() => {
                 startFakeLoading();

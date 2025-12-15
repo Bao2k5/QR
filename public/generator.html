@@ -193,82 +193,75 @@
             const mode = document.querySelector('input[name="mode"]:checked').value;
             const text = textInput.value;
 
-            // Use high res for final output
-            const scale = 2; // Art scale
-
             // 1. Draw Background
-            // Wait for image to be sure (it is local but still)
             if (!bgImg.complete) return alert("Chờ ảnh load xíu đã!");
 
+            // Set canvas to match image size
             finalCanvas.width = bgImg.naturalWidth;
             finalCanvas.height = bgImg.naturalHeight;
 
-            // If image is too small, scale up canvas? No, keep native resolution.
-            // Or normalize to 1000x1000? Let's use image native size for best quality.
-            const size = Math.min(bgImg.naturalWidth, bgImg.naturalHeight);
-            finalCanvas.width = size;
-            finalCanvas.height = size;
+            // Draw full background
+            ctx.drawImage(bgImg, 0, 0);
 
-            // Draw Center Crop
-            const ratio = Math.max(size / bgImg.naturalWidth, size / bgImg.naturalHeight);
-            const centerShift_x = (size - bgImg.naturalWidth * ratio) / 2;
-            const centerShift_y = (size - bgImg.naturalHeight * ratio) / 2;
-
-            // Filter for "Art" look
-            // ctx.filter = "brightness(1.1)";
-            ctx.drawImage(bgImg, 0, 0, bgImg.naturalWidth, bgImg.naturalHeight, centerShift_x, centerShift_y, bgImg.naturalWidth * ratio, bgImg.naturalHeight * ratio);
-            // ctx.filter = "none";
-
-            // 2. Generate QR Matrix
-            // Type 10 = Dense enough but not too dense (Good balance)
-            const qr = qrcode(10, 'H');
+            // 2. Generate QR
+            // Type 4 = Good balance of density for standard URLs
+            const qr = qrcode(4, 'M');
             qr.addData(text);
             qr.make();
 
-            const count = qr.getModuleCount();
-            const cellSize = size / count;
+            const moduleCount = qr.getModuleCount();
 
-            // 3. Draw Dots
-            for (let row = 0; row < count; row++) {
-                for (let col = 0; col < count; col++) {
+            // 3. Draw QR in a "Card" style (TikTok Trend)
+            // Center the QR container
+            const size = Math.min(finalCanvas.width, finalCanvas.height) * 0.5; // 50% of image size
+            const padding = size * 0.1; // White padding
+            const totalSize = size + (padding * 2);
+
+            const startX = (finalCanvas.width - totalSize) / 2;
+            const startY = (finalCanvas.height - totalSize) / 2;
+
+            // Draw White Card Background (Shadow + Rounded)
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 50;
+            ctx.fillStyle = "white";
+
+            // Simple Rounded Rect setup
+            const r = 40; // radius
+            ctx.beginPath();
+            ctx.roundRect(startX, startY, totalSize, totalSize, r);
+            ctx.fill();
+            ctx.shadowColor = "transparent"; // Reset shadow
+
+            // Draw QR Modules
+            const cellSize = size / moduleCount;
+            const qrStartX = startX + padding;
+            const qrStartY = startY + padding;
+
+            ctx.fillStyle = (mode === 'color') ? "#ff4757" : "black";
+
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
                     if (qr.isDark(row, col)) {
-                        // Position Detection Patterns
-                        const isPositioner = (row < 8 && col < 8) || (row < 8 && col >= count - 8) || (row >= count - 8 && col < 8);
+                        // Draw each module as a slightly rounded square/circle
+                        const x = qrStartX + (col * cellSize);
+                        const y = qrStartY + (row * cellSize);
+                        const w = cellSize;
+                        const h = cellSize;
 
-                        const cx = col * cellSize + cellSize / 2;
-                        const cy = row * cellSize + cellSize / 2;
-                        const r = cellSize * 0.38; // Dot radius
-
-                        if (isPositioner) {
-                            // Positioners: Always Solid Black Square (SAFE)
-                            // Or Solid Black Circle big? Square is safest for scanning.
-                            ctx.fillStyle = "black";
-                            ctx.fillRect(col * cellSize, row * cellSize, cellSize + 0.5, cellSize + 0.5); // +0.5 to seal gaps
-                        } else {
-                            // Data Dots
-                            // Halo for contrast
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, r + (cellSize * 0.1), 0, 2 * Math.PI);
-                            ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // White Halo
-                            ctx.fill();
-
-                            // The Dot
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-
-                            if (mode === 'color') {
-                                // "Color" Mode: Pick color from image? 
-                                // Actually usually this means "Transparent Dark" so image color shows through
-                                ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                            } else {
-                                // "Black" Mode: Solid dots
-                                ctx.fillStyle = "#2d3436";
-                            }
-                            ctx.fill();
-                        }
+                        // Make it look nice (Liquid style)
+                        ctx.beginPath();
+                        ctx.roundRect(x, y, w, h, w * 0.3);
+                        ctx.fill();
                     }
                 }
             }
+
+            // Add "Scan Me" text
+            ctx.fillStyle = "#2d3436";
+            const fontSize = totalSize * 0.08;
+            ctx.font = `bold ${fontSize}px Poppins`;
+            ctx.textAlign = "center";
+            ctx.fillText("Quét tui đi! 📸", finalCanvas.width / 2, startY + totalSize + fontSize + 20);
         }
     </script>
 
