@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Runaway Button
     runawayBtn.addEventListener('mousemove', moveButton);
     runawayBtn.addEventListener('touchstart', (e) => {
-        if (dodgeCount < 5) { e.preventDefault(); moveButton(); }
+        if (dodgeCount < 1) { e.preventDefault(); moveButton(); }
     });
     runawayBtn.addEventListener('click', () => {
-        if (dodgeCount < 5) {
+        if (dodgeCount < 1) { // Reduced to 1 for testing
             moveButton();
         } else {
             // STOPPED moving
