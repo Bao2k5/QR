@@ -222,21 +222,9 @@ body::before {
     animation: float 3s ease-in-out infinite;
 }
 
-/* FIX: Gift Scene Full Touch Target */
-#gift-scene {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    cursor: pointer;
-    /* Show it's clickable */
-}
+/* Revert: Gift Scene back to normal flow to avoid blocking UI */
+/* #gift-scene styles removed or reset to default if needed */
+/* The previous #gift-scene block is completely removed here */
 
 .hint {
     margin-top: 30px;

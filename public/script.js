@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let dodgeCount = 0;
 
     // --- PRANK LOGIC ---
-    // FIX: Click ANYWHERE in the scene to open (easier for mobile)
-    giftScene.addEventListener('click', () => {
+    // --- PRANK LOGIC ---
+    // Revert: Click specifically on the box (as requested)
+    giftBox.addEventListener('click', () => {
         // Play Music immediately
         const audio = document.getElementById('bg-music');
         audio.volume = 0.6;
