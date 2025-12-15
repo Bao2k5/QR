@@ -159,4 +159,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Date.now() < end) requestAnimationFrame(frame);
         }());
     }
+
+    window.finishStory = function () {
+        // Stop confetti
+        // Show the funny alert
+        alert("✅ XÁC NHẬN THÀNH CÔNG!\n\nHệ thống đã ghi nhận: Thùy Anh đồng ý bao Bảo một chầu bánh ngọt thật ngon để trả công làm chiếc web xịn xò này! \n\nKhông được đổi ý nha! Chụp màn hình làm bằng chứng rồi đó! 📸😎");
+
+        // Change button text
+        const btn = document.getElementById('final-btn');
+        btn.innerText = "Đã chốt đơn à nha! 🔒";
+        btn.disabled = true;
+        btn.style.backgroundColor = "#636e72";
+
+        // Show validation text
+        const troll = document.getElementById('final-troll');
+        troll.innerText = "Giao dịch thành công. Cảm ơn quý khách! 💸";
+        troll.classList.remove('hidden');
+        troll.style.display = 'block';
+
+        // More confetti
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    };
 });
