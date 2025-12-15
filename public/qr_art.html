@@ -4,13 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Art Pro</title>
+    <title>QR Art "Li Ti" ✨</title>
     <!-- Use qrcode-generator to get the matrix -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <!-- Dancing Script Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #1e1e1e;
+            background: #2d3436;
             color: white;
             text-align: center;
             display: flex;
@@ -22,27 +24,36 @@
         }
 
         canvas {
-            border-radius: 20px;
+            border-radius: 10px;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
             max-width: 95%;
             height: auto;
+            border: 5px solid white;
         }
 
         h2 {
-            margin-bottom: 10px;
+            font-family: 'Dancing Script', cursive;
+            margin-bottom: 5px;
+            font-size: 2rem;
         }
 
         p {
-            opacity: 0.7;
+            opacity: 0.8;
             margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            font-style: italic;
+            color: #fab1a0;
         }
     </style>
 </head>
 
 <body>
 
-    <h2>QR Phong Cách "Xuyên Thấu" ✨</h2>
-    <p>Chờ ảnh hiện ra (2s) rồi Lưu về nhé!</p>
+    <h2>Quét tui đi! 💖</h2>
+    <p>Chờ ảnh "hiện hình"... (Nếu lâu hãy reload)</p>
     <canvas id="canvas"></canvas>
 
     <script>
@@ -50,71 +61,93 @@
         const ctx = canvas.getContext('2d');
         const url = "https://qr-ahmt.onrender.com/";
 
-        // 1. Setup Image
         const img = new Image();
         img.src = 'qr_bg.jpg';
 
-        img.onload = function () {
-            // High Resolution
+        // Wait for font
+        document.fonts.ready.then(() => {
+            if (img.complete) generate();
+            else img.onload = generate;
+        });
+
+        function generate() {
+            // High Resolution Canvas
+            const scale = 2; // sharper rendering
             const size = Math.min(img.width, img.height);
             canvas.width = size;
             canvas.height = size;
 
-            // Draw background image (Squared centered)
-            // ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Stretch
-            // Better: Cover crop
+            // 1. Draw Background (Cover Crop)
             const ratio = Math.max(canvas.width / img.width, canvas.height / img.height);
             const centerShift_x = (canvas.width - img.width * ratio) / 2;
             const centerShift_y = (canvas.height - img.height * ratio) / 2;
-            ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
 
-            // 2. Generate QR Matrix
-            // Type 0 = Auto, 'H' = High Error Correction (Crucial for art QR)
-            const qr = qrcode(0, 'H');
+            // Dim background slightly to convert into "art"
+            ctx.filter = "brightness(1.1) contrast(0.9)";
+            ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+            ctx.filter = "none";
+
+            // 2. Generate High Density QR (Type 15 for "Li Ti" dots)
+            // Error Correction 'H' (High) allows 30% damage/transparency
+            const qr = qrcode(15, 'H');
             qr.addData(url);
             qr.make();
 
             const count = qr.getModuleCount();
             const cellSize = canvas.width / count;
 
-            // 3. Draw QR Overlay
+            // 3. Draw "Li Ti" Dots
             for (let row = 0; row < count; row++) {
                 for (let col = 0; col < count; col++) {
                     if (qr.isDark(row, col)) {
-                        // POSITIONER DETECTOR PATTERNS (The big squares) - Keep them Solid Dark for scanning reliability
-                        // Top Left (0-7), Top Right (count-8 to count), Bottom Left (0-7)
                         const isPositioner = (row < 8 && col < 8) || (row < 8 && col >= count - 8) || (row >= count - 8 && col < 8);
 
-                        if (isPositioner) {
-                            ctx.fillStyle = "rgba(0, 0, 0, 1)"; // Solid Black
-                        } else {
-                            // DATA MODULES - Semi-transparent dots
-                            // Try a "Dot" style instead of square for smoother look
-                            ctx.fillStyle = "rgba(0, 0, 0, 0.4)"; // 40% dark overlay
-                        }
-
-                        // Draw square
-                        // ctx.fillRect(Math.floor(col * cellSize), Math.floor(row * cellSize), Math.ceil(cellSize), Math.ceil(cellSize));
-
-                        // Draw Circle Art Style
-                        ctx.beginPath();
                         const cx = col * cellSize + cellSize / 2;
                         const cy = row * cellSize + cellSize / 2;
-                        const r = cellSize * 0.4; // Radius
-                        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+
+                        // "Li Ti" means small dots
+                        // We use slightly smaller radius than cell size to create "air" between dots
+                        const r = cellSize * 0.35;
+
+                        // A. Halo (Viền sáng) - Critical for blending
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, r + (cellSize * 0.15), 0, 2 * Math.PI);
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; // Soft white aura
                         ctx.fill();
+
+                        // B. The Dot itself
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+
+                        if (isPositioner) {
+                            // Positioners must be distinct
+                            ctx.fillStyle = "#000000";
+                            // Draw positioners as connected blocks for classic look or distinct large dots?
+                            // Let's keep them as dots but SOLID BLACK
+
+                            // actually drawing Positioners as squares is safer for scanning
+                            ctx.clearRect(col * cellSize, row * cellSize, cellSize, cellSize); // clear halo
+                            ctx.fillStyle = "rgba(0,0,0,0.8)";
+                            ctx.fillRect(col * cellSize, row * cellSize, cellSize * 0.9, cellSize * 0.9);
+                        } else {
+                            // Data Dots: "Li Ti" Art
+                            // Use semi-transparent dark pixel
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+                            ctx.fill();
+                        }
                     }
                 }
             }
 
-            // 4. Add "Scan Me" text at bottom
-            ctx.fillStyle = "white";
-            ctx.shadowColor = "black";
+            // 4. Add Text Watermark
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
             ctx.shadowBlur = 10;
-            ctx.font = `bold ${canvas.width * 0.05}px sans-serif`;
-            ctx.textAlign = "center";
-            ctx.fillText("qr-ahmt.onrender.com", canvas.width / 2, canvas.height - 20);
-        };
+            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+            const fontSize = canvas.width * 0.05;
+            ctx.font = `bold ${fontSize}px 'Dancing Script'`; // Use font
+            ctx.textAlign = "right";
+            ctx.fillText("Thùy Anh & Bảo", canvas.width - 20, canvas.height - 20);
+        }
     </script>
 
 </body>
