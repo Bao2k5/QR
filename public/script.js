@@ -161,9 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.finishStory = function () {
-        // Stop confetti
-        // Show the funny alert
-        alert("✅ XÁC NHẬN THÀNH CÔNG!\n\nHệ thống đã ghi nhận: Thùy Anh đồng ý bao Bảo một chầu bánh ngọt thật ngon để trả công làm chiếc web xịn xò này! \n\nKhông được đổi ý nha! Chụp màn hình làm bằng chứng rồi đó! 📸😎");
+        // Stop confetti logic could be here if needed
+
+        // Show the Custom Modal
+        const modal = document.getElementById('custom-modal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
 
         // Change button text
         const btn = document.getElementById('final-btn');
@@ -179,5 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // More confetti
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    };
+
+    window.closeModal = function () {
+        const modal = document.getElementById('custom-modal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+
+        // Final rain of confetti
+        triggerConfetti();
     };
 });
