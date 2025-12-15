@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Món quà bí mật 🎁</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap"
+        rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Scene 1: The Gift Box -->
+        <div id="gift-scene" class="scene">
+            <h1 class="title">Có một món quà bí mật dành cho chị iu nè! <br> Mở đi!</h1>
+            <div class="gift-box-container" id="open-btn">
+                <div class="gift-box">
+                    <div class="lid"></div>
+                    <div class="box"></div>
+                    <div class="ribbon"></div>
+                </div>
+                <div class="shadow"></div>
+            </div>
+            <p class="hint">(Chạm vào hộp quà để mở)</p>
+        </div>
+
+        <!-- Scene 2: The Prank (Funny) -->
+        <div id="prank-scene" class="scene hidden">
+            <h1 class="prank-text">Hí hí chị iu ngốc xít! 🐷</h1>
+            <div class="image-container">
+                <!-- Placeholder for funny image (Pig) -->
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnZ4nHV4cXV4cXV4cXV4cXV4cXV4cXV4cXV4cXV4/LqVdZ5bM4M4M/giphy.gif"
+                    alt="Funny Pig" class="funny-img">
+            </div>
+            <p class="sub-text">Bị lừa rồi nhé lêu lêu!</p>
+        </div>
+
+        <!-- Scene 3: The Real Wish (Sincere) -->
+        <div id="wish-scene" class="scene hidden">
+            <h1 class="wish-title">Đùa chút thôi... ❤️</h1>
+            <div class="wish-card">
+                <p class="message">
+                    Chúc chị iu đi làm ở chỗ mới thật nhiều may mắn, <br>
+                    thành công và luôn vui vẻ nhé! <br>
+                    <span class="highlight">Everything will be okay!</span>
+                </p>
+                <div class="hearts">❤️❤️❤️</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
