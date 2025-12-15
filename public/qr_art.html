@@ -1,90 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo QR Nghệ Thuật</title>
+    <title>QR Art Pro</title>
+    <!-- Use qrcode-generator to get the matrix -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e1e1e;
+            color: white;
             text-align: center;
-            background: #eee;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
         }
 
         canvas {
-            border: 5px solid white;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            max-width: 95%;
             height: auto;
         }
 
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 15px 30px;
-            background: #ff4757;
-            color: white;
-            text-decoration: none;
-            font-size: 1.2rem;
-            border-radius: 30px;
-            cursor: pointer;
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            opacity: 0.7;
+            margin-top: 5px;
         }
     </style>
 </head>
 
 <body>
-    <h1>QR Code của Thùy Anh & Bảo</h1>
-    <p>Nhấp chuột phải vào ảnh dưới để lưu về máy nha!</p>
+
+    <h2>QR Phong Cách "Xuyên Thấu" ✨</h2>
+    <p>Chờ ảnh hiện ra (2s) rồi Lưu về nhé!</p>
     <canvas id="canvas"></canvas>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const url = "https://qr-ahmt.onrender.com/";
 
-        const imgBg = new Image();
-        imgBg.src = 'qr_bg.jpg';
+        // 1. Setup Image
+        const img = new Image();
+        img.src = 'qr_bg.jpg';
 
-        const imgQr = new Image();
-        // Using strict API to get a transparent QR code
-        imgQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://qr-ahmt.onrender.com/&color=ff4757&bgcolor=ffffff&margin=10';
+        img.onload = function () {
+            // High Resolution
+            const size = Math.min(img.width, img.height);
+            canvas.width = size;
+            canvas.height = size;
 
-        imgBg.onload = function () {
-            // Set canvas size to match image
-            canvas.width = imgBg.width;
-            canvas.height = imgBg.height;
+            // Draw background image (Squared centered)
+            // ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Stretch
+            // Better: Cover crop
+            const ratio = Math.max(canvas.width / img.width, canvas.height / img.height);
+            const centerShift_x = (canvas.width - img.width * ratio) / 2;
+            const centerShift_y = (canvas.height - img.height * ratio) / 2;
+            ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
 
-            // Draw Background
-            ctx.drawImage(imgBg, 0, 0);
+            // 2. Generate QR Matrix
+            // Type 0 = Auto, 'H' = High Error Correction (Crucial for art QR)
+            const qr = qrcode(0, 'H');
+            qr.addData(url);
+            qr.make();
 
-            // Add a semi-transparent box for QR
-            const qrSize = Math.min(canvas.width, canvas.height) * 0.4;
-            const x = (canvas.width - qrSize) / 2;
-            const y = (canvas.height - qrSize) / 2;
+            const count = qr.getModuleCount();
+            const cellSize = canvas.width / count;
 
-            // White rounded rect background for QR visibility
-            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-            ctx.beginPath();
-            ctx.roundRect(x - 20, y - 20, qrSize + 40, qrSize + 40, 20);
-            ctx.fill();
+            // 3. Draw QR Overlay
+            for (let row = 0; row < count; row++) {
+                for (let col = 0; col < count; col++) {
+                    if (qr.isDark(row, col)) {
+                        // POSITIONER DETECTOR PATTERNS (The big squares) - Keep them Solid Dark for scanning reliability
+                        // Top Left (0-7), Top Right (count-8 to count), Bottom Left (0-7)
+                        const isPositioner = (row < 8 && col < 8) || (row < 8 && col >= count - 8) || (row >= count - 8 && col < 8);
 
-            // Draw QR Code centered (Waiting for QR to load)
-            if (imgQr.complete) {
-                ctx.drawImage(imgQr, x, y, qrSize, qrSize);
-            } else {
-                imgQr.onload = function () {
-                    ctx.drawImage(imgQr, x, y, qrSize, qrSize);
+                        if (isPositioner) {
+                            ctx.fillStyle = "rgba(0, 0, 0, 1)"; // Solid Black
+                        } else {
+                            // DATA MODULES - Semi-transparent dots
+                            // Try a "Dot" style instead of square for smoother look
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.4)"; // 40% dark overlay
+                        }
+
+                        // Draw square
+                        // ctx.fillRect(Math.floor(col * cellSize), Math.floor(row * cellSize), Math.ceil(cellSize), Math.ceil(cellSize));
+
+                        // Draw Circle Art Style
+                        ctx.beginPath();
+                        const cx = col * cellSize + cellSize / 2;
+                        const cy = row * cellSize + cellSize / 2;
+                        const r = cellSize * 0.4; // Radius
+                        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
                 }
             }
 
-            // Add Text
-            ctx.fillStyle = "#ff4757";
-            ctx.font = `bold ${canvas.width * 0.05}px Arial`;
+            // 4. Add "Scan Me" text at bottom
+            ctx.fillStyle = "white";
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 10;
+            ctx.font = `bold ${canvas.width * 0.05}px sans-serif`;
             ctx.textAlign = "center";
-            ctx.fillText("Quét tui đi! 💖", canvas.width / 2, y + qrSize + 60);
+            ctx.fillText("qr-ahmt.onrender.com", canvas.width / 2, canvas.height - 20);
         };
     </script>
+
 </body>
 
 </html>
