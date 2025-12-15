@@ -23,19 +23,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
 
-    const taunts = ["Lêu lêu 😝", "Hụt rồi!", "Bắt em đi!", "Chậm quá à!", "Cố lên chị iu!"];
+    const taunts = [
+        "Lêu lêu 😝",
+        "Hụt rồi!",
+        "Bắt em đi!",
+        "Chậm quá à!",
+        "Cố lên chị iu!",
+        "Non nớt quá! 🤣",
+        "Kém dọ! 😎",
+        "Còn lâu mới bắt được!",
+        "Tay đâu mà chậm thế?",
+        "Ahihi đồ ngốc! 🤪"
+    ];
 
     // Runaway Button
     runawayBtn.addEventListener('mousemove', moveButton);
     runawayBtn.addEventListener('touchstart', (e) => {
-        if (dodgeCount < 1) { e.preventDefault(); moveButton(); }
+        // Prevent default tap zoom/behavior
+        e.preventDefault();
+        moveButton();
     });
+
     runawayBtn.addEventListener('click', () => {
-        if (dodgeCount < 1) { // Reduced to 1 for testing
+        if (dodgeCount < 15) { // Increased to 15 for "nhây" mode
             moveButton();
         } else {
             // STOPPED moving
-            runawayBtn.innerText = "Giỏi lắm! ❤️";
+            runawayBtn.innerText = "Giỏi ghê tarr! ❤️";
             setTimeout(() => {
                 startFakeLoading();
             }, 500);
@@ -43,7 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function moveButton() {
-        if (dodgeCount >= 5) return;
+        // Reduced gap to 14 to ensure it definitely finishes but takes longer
+        if (dodgeCount >= 15) return;
 
         // Change text randomly
         runawayBtn.innerText = taunts[dodgeCount % taunts.length];
@@ -69,8 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const messages = [
             "Đang phân tích sự dễ thương...",
             "Phát hiện mức độ cute quá tải! ⚠️",
-            "Đang tải tình cảm của em Bảo...",
-            "Xong rồi nè! ❤️"
+            "Đang tải tình cảm của em Bảo..."
         ];
 
         let i = 0;
@@ -83,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadingScene.classList.add('hidden');
                     loadingScene.style.display = 'none';
                     transitionToStory();
-                }, 1000);
+                }, 2000); // Wait 2s for suspense
             }
-        }, 1500);
+        }, 2500); // Slow update (2.5s) for mystery
     }
 
     // --- STORY LOGIC ---
@@ -161,31 +175,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.finishStory = function () {
-        // Stop confetti logic could be here if needed
+        console.log("Finish Story Triggered");
+        try {
+            // Check confetti
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            } else {
+                console.warn("Confetti not loaded");
+            }
 
-        // Show the Custom Modal
-        const modal = document.getElementById('custom-modal');
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        modal.style.opacity = '1';
-        modal.style.visibility = 'visible';
-        modal.style.zIndex = '9999';
+            // Show the Custom Modal
+            const modal = document.getElementById('custom-modal');
+            if (!modal) {
+                alert("Lỗi: Không tìm thấy modal!");
+                return;
+            }
 
-        // Change button text
-        const btn = document.getElementById('final-btn');
-        btn.innerText = "Đã chốt đơn à nha! 🔒";
-        btn.disabled = true;
-        btn.style.backgroundColor = "#636e72";
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+            modal.style.zIndex = '9999';
 
-        // Show validation text
-        const troll = document.getElementById('final-troll');
-        troll.innerText = "Giao dịch thành công. Cảm ơn quý khách! 💸";
-        troll.classList.remove('hidden');
-        troll.style.display = 'block';
+            // Change button text
+            const btn = document.getElementById('final-btn');
+            if (btn) {
+                btn.innerText = "Đã chốt đơn à nha! 🔒";
+                btn.disabled = true;
+                btn.style.backgroundColor = "#636e72";
+            }
 
-        // More confetti
-        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            // Show validation text
+            const troll = document.getElementById('final-troll');
+            if (troll) {
+                troll.innerText = "Giao dịch thành công. Cảm ơn quý khách! 💸";
+                troll.classList.remove('hidden');
+                troll.style.display = 'block';
+            }
+
+        } catch (e) {
+            alert("Lỗi hiển thị: " + e.message);
+            console.error(e);
+        }
     };
+
+    // Explicit binding to ensure it works
+    const finalBtn = document.getElementById('final-btn');
+    if (finalBtn) {
+        finalBtn.addEventListener('click', window.finishStory);
+    }
 
     window.closeModal = function () {
         const modal = document.getElementById('custom-modal');
