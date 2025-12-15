@@ -453,7 +453,11 @@ body::before {
     }
 }
 
-}
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* Custom Modal Styling */
